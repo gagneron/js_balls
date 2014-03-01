@@ -31,7 +31,7 @@
 			var circle = makeSVG('circle', 
 				{ 	cx: this.info.cx,
 				  	cy: this.info.cy,
-				  	r:  10,
+				  	r:  this.info.r,
 				  	id: html_id,
 				  	style: "fill: orange"
 				});
@@ -99,9 +99,28 @@
 	var playground = new PlayGround();
 	setInterval(playground.loop, 20 );
 
-	document.onclick = function(e) {
-		playground.createNewCircle(e.x,e.y, 10);
-	}
+	// document.onclick = function(e) {
+		
+	// };
+
+	(function(){
+
+		var mousedown_time;
+		var time_pressed;
+
+		document.onmousedown = function(){
+			mousedown_time = new Date().getTime();
+		};
+
+		document.onmouseup = function(e){
+			var mouseup_time = new Date().getTime();
+			time_pressed = mouseup_time-mousedown_time;
+			playground.createNewCircle(e.x,e.y, time_pressed/10);
+		};
+
+	})();
+
+
 
 	</script>
 

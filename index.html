@@ -10,10 +10,10 @@
 	<svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
 
 	<script>
-	function Circle(cx, cy, r, html_id)
+	function Circle(cx, cy, r, html_id, circles)
 	{
 		var html_id = html_id;
-		this.info = { cx: cx,  cy: cy, r: r};
+		this.info = { cx: cx,  cy: cy, r: r, id: html_id};
 
 		//private function that generates a random number
 		var randomNumberBetween = function(min, max){
@@ -52,11 +52,30 @@
 				this.info.velocity.y = this.info.velocity.y * -1;
 			}
 
+			// collisions, check each circle to see if they are overlapping with other circles
+			for(circle in circles){
+				if(this.info.id != circles[circle].info.id){
+
+					if ( lineDistance(this.info, circles[circle].info) < (this.info.r + circles[circle].info.r) ){
+
+							var oldx = this.info.velocity.x;
+							var oldy = this.info.velocity.y;
+							this.info.velocity.x = circles[circle].info.velocity.x;
+							this.info.velocity.y = circles[circle].info.velocity.y;
+							circles[circle].info.velocity.x = oldx;
+							circles[circle].info.velocity.y = oldy;						
+					}
+				}					
+			}
+			
 			this.info.cx = this.info.cx + this.info.velocity.x*time;
 			this.info.cy = this.info.cy + this.info.velocity.y*time;
 
 			el.setAttribute("cx", this.info.cx);
 			el.setAttribute("cy", this.info.cy);
+
+
+			
 		}
 
 		//creates the SVG element and returns it
@@ -73,6 +92,19 @@
 
 	}
 
+	function lineDistance(circle1, circle2){
+		var xs;
+		var ys;
+	 	
+		xs = circle2.cx - circle1.cx;
+		xs = xs * xs;
+	 
+		ys = circle2.cy - circle1.cy;
+		ys = ys * ys;
+	 
+		return Math.sqrt(xs + ys);
+	}
+
 	function PlayGround()
 	{
 		var counter = 0;  //counts the number of circles created
@@ -87,21 +119,18 @@
 		}
 
 		this.createNewCircle = function(x,y,r){
-			var new_circle = new Circle(x,y,r,counter++);
+			var new_circle = new Circle(x,y,r,counter++, circles);
 			circles.push(new_circle);
+			console.log(circles[counter-1]);
 			// console.log('created a new circle!', new_circle);
 		}
 
 		//create one circle when the game starts
-		this.createNewCircle(document.body.clientWidth/2, document.body.clientHeight/2, 10);
+		this.createNewCircle(document.body.clientWidth/2, document.body.clientHeight/2, 20);
 	}
 
 	var playground = new PlayGround();
 	setInterval(playground.loop, 20 );
-
-	// document.onclick = function(e) {
-		
-	// };
 
 	(function(){
 
